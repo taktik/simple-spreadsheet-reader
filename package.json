@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "type": "dist/index.d.ts",
   "scripts": {
+    "prepublish": "npm run build",
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
     "build": "tsc"
