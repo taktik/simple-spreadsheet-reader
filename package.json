@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "type": "dist/index.d.ts",
   "scripts": {
+    "eslint": "eslint 'src/*.ts'",
     "prepublish": "npm run build",
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
@@ -40,6 +41,24 @@
     "ts-loader": "^7.0.2",
     "typedoc": "^0.17.6",
     "typescript": "^3.8.3",
-    "webpack": "^4.43.0"
+    "webpack": "^4.43.0",
+    "@typescript-eslint/eslint-plugin": "2.26.0",
+    "@typescript-eslint/parser": "2.26.0",
+    "eslint": "6.8.0",
+    "eslint-config-standard": "14.1.1",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/*.ts": "eslint --max-warnings 0"
   }
 }
