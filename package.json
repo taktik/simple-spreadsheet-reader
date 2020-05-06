@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "simple reader for public google spredsheet",
   "main": "dist/index.js",
-  "type": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
+  "repository": "https://github.com/hubjac1/simple-spreadsheet-reader",
   "scripts": {
     "prepublish": "npm run build",
     "test": "karma start --no-auto-watch --single-run",

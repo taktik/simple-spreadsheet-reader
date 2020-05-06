@@ -17,7 +17,10 @@ await spreadsheedReader.loadSpreadsheetData()
 
 // get one cell value
 const cellA1 = spreadsheedReader.getCellValue('A1')
+console.log('A1') // text
 
+// Compute Node elements of the table.
+// In case of errors the node will contains the error message.
 const tableElement = spreadsheedReader.getTable()
 
 document.body.append(tableElement)
