@@ -71,7 +71,7 @@ describe('spredsheedReader', () => {
 				'cellId': 'A1',
 				'coll': 'A',
 				'collNb': 65,
-				'rows': '1',
+				'rows': 1,
 				'value': 'text',
 			})
 		})

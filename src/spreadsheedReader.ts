@@ -6,7 +6,7 @@ import Request = httpclient.Request
 export type SpredsheedCell = {
 	cell: string,
 	value: string
-	rows: string,
+	rows: number,
 	coll: string,
 	collNb: number
 }
@@ -91,7 +91,7 @@ export class SpreadsheedReader {
 				const parcedCell = /([A-Z]+)([0-9]+)/.exec(elem.cell)
 				if(parcedCell === null) throw Error('Error in spredsheet format')
 				const [cellId, coll, rows] = parcedCell
-				return Object.assign({ rows, coll, cellId, collNb: coll.charCodeAt(0) }, elem)
+				return Object.assign({ rows: Number(rows), coll, cellId, collNb: coll.charCodeAt(0) }, elem)
 			})
 		this._rawJson = rawJson
 		this._maxRaw = Number(search(this.cellsList, 'max_by([*], &rows).rows'))
