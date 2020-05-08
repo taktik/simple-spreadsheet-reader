@@ -1,4 +1,4 @@
-[simple-spreadsheet-reader](/README.md) › [Globals](/globals.md) › ["spreadsheetReader"](_spreadsheetreader_.md)
+[simple-spreadsheet-reader](/README.md) › [Globals](/globals.md) › ["spreadsheetReader"](spreadsheetreader.md)
 
 # Module: "spreadsheetReader"
 
@@ -6,16 +6,16 @@
 
 ### Classes
 
-* [SpreadsheetReader](_spreadsheetreader_.spreadsheetreader.md)
+* [SpreadsheetReader](class-spreadsheetreader.md)
 
 ### Type aliases
 
-* [GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)
-* [SpredsheedCell](_spreadsheetreader_.md#spredsheedcell)
+* [GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)
+* [SpredsheedCell](spreadsheetreader.md#spredsheedcell)
 
 ### Variables
 
-* [Request](_spreadsheetreader_.md#request)
+* [Request](spreadsheetreader.md#request)
 
 ## Type aliases
 

@@ -1,4 +1,4 @@
-[simple-spreadsheet-reader](README.md) › [Globals](globals.md) › ["spreadsheetReader"](_spreadsheetreader_.md) › [SpreadsheetReader](_spreadsheetreader_.spreadsheetreader.md)
+[simple-spreadsheet-reader](README.md) › [Globals](globals.md) › ["spreadsheetReader"](spreadsheetreader.md) › [SpreadsheetReader](class-spreadsheetreader.md)
 
 # Class: SpreadsheetReader
 
@@ -12,44 +12,44 @@ A simple reader for a Google spreadsheet publish on web.
 
 ### Constructors
 
-* [constructor](_spreadsheetreader_.spreadsheetreader.md#constructor)
+* [constructor](class-spreadsheetreader.md#constructor)
 
 ### Properties
 
-* [_cellsList](_spreadsheetreader_.spreadsheetreader.md#protected-optional-_cellslist)
-* [_maxColl](_spreadsheetreader_.spreadsheetreader.md#protected-optional-_maxcoll)
-* [_maxRaw](_spreadsheetreader_.spreadsheetreader.md#protected-optional-_maxraw)
-* [_rawJson](_spreadsheetreader_.spreadsheetreader.md#protected-optional-_rawjson)
-* [_xmlError](_spreadsheetreader_.spreadsheetreader.md#protected-optional-_xmlerror)
-* [httpClient](_spreadsheetreader_.spreadsheetreader.md#protected-httpclient)
-* [spreadsheetsIs](_spreadsheetreader_.spreadsheetreader.md#protected-optional-spreadsheetsis)
+* [_cellsList](class-spreadsheetreader.md#protected-optional-_cellslist)
+* [_maxColl](class-spreadsheetreader.md#protected-optional-_maxcoll)
+* [_maxRaw](class-spreadsheetreader.md#protected-optional-_maxraw)
+* [_rawJson](class-spreadsheetreader.md#protected-optional-_rawjson)
+* [_xmlError](class-spreadsheetreader.md#protected-optional-_xmlerror)
+* [httpClient](class-spreadsheetreader.md#protected-httpclient)
+* [spreadsheetsIs](class-spreadsheetreader.md#protected-optional-spreadsheetsis)
 
 ### Accessors
 
-* [cellsList](_spreadsheetreader_.spreadsheetreader.md#cellslist)
-* [maxColl](_spreadsheetreader_.spreadsheetreader.md#maxcoll)
-* [maxRaw](_spreadsheetreader_.spreadsheetreader.md#maxraw)
-* [rawJson](_spreadsheetreader_.spreadsheetreader.md#rawjson)
-* [xmlError](_spreadsheetreader_.spreadsheetreader.md#xmlerror)
+* [cellsList](class-spreadsheetreader.md#cellslist)
+* [maxColl](class-spreadsheetreader.md#maxcoll)
+* [maxRaw](class-spreadsheetreader.md#maxraw)
+* [rawJson](class-spreadsheetreader.md#rawjson)
+* [xmlError](class-spreadsheetreader.md#xmlerror)
 
 ### Methods
 
-* [createHeadCell](_spreadsheetreader_.spreadsheetreader.md#protected-createheadcell)
-* [generateTable](_spreadsheetreader_.spreadsheetreader.md#protected-generatetable)
-* [getAllLines](_spreadsheetreader_.spreadsheetreader.md#getalllines)
-* [getCellValue](_spreadsheetreader_.spreadsheetreader.md#getcellvalue)
-* [getTable](_spreadsheetreader_.spreadsheetreader.md#gettable)
-* [loadSpreadsheetData](_spreadsheetreader_.spreadsheetreader.md#loadspreadsheetdata)
-* [processSpreadsheets](_spreadsheetreader_.spreadsheetreader.md#protected-processspreadsheets)
-* [formatColl](_spreadsheetreader_.spreadsheetreader.md#static-protected-formatcoll)
-* [lettersGenerator](_spreadsheetreader_.spreadsheetreader.md#static-protected-lettersgenerator)
-* [numberGenerator](_spreadsheetreader_.spreadsheetreader.md#static-protected-numbergenerator)
+* [createHeadCell](class-spreadsheetreader.md#protected-createheadcell)
+* [generateTable](class-spreadsheetreader.md#protected-generatetable)
+* [getAllLines](class-spreadsheetreader.md#getalllines)
+* [getCellValue](class-spreadsheetreader.md#getcellvalue)
+* [getTable](class-spreadsheetreader.md#gettable)
+* [loadSpreadsheetData](class-spreadsheetreader.md#loadspreadsheetdata)
+* [processSpreadsheets](class-spreadsheetreader.md#protected-processspreadsheets)
+* [formatColl](class-spreadsheetreader.md#static-protected-formatcoll)
+* [lettersGenerator](class-spreadsheetreader.md#static-protected-lettersgenerator)
+* [numberGenerator](class-spreadsheetreader.md#static-protected-numbergenerator)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new SpreadsheetReader**(`spreadsheetsUrlOrId`: string): *[SpreadsheetReader](_spreadsheetreader_.spreadsheetreader.md)*
+\+ **new SpreadsheetReader**(`spreadsheetsUrlOrId`: string): *[SpreadsheetReader](class-spreadsheetreader.md)*
 
 *Defined in [spreadsheetReader.ts:73](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L73)*
 
@@ -59,13 +59,13 @@ Name | Type |
 ------ | ------ |
 `spreadsheetsUrlOrId` | string |
 
-**Returns:** *[SpreadsheetReader](_spreadsheetreader_.spreadsheetreader.md)*
+**Returns:** *[SpreadsheetReader](class-spreadsheetreader.md)*
 
 ## Properties
 
 ### `Protected` `Optional` _cellsList
 
-• **_cellsList**? : *Array‹[SpredsheedCell](_spreadsheetreader_.md#spredsheedcell)›*
+• **_cellsList**? : *Array‹[SpredsheedCell](spreadsheetreader.md#spredsheedcell)›*
 
 *Defined in [spreadsheetReader.ts:24](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L24)*
 
@@ -89,7 +89,7 @@ ___
 
 ### `Protected` `Optional` _rawJson
 
-• **_rawJson**? : *[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)*
+• **_rawJson**? : *[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)*
 
 *Defined in [spreadsheetReader.ts:23](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L23)*
 
@@ -121,13 +121,13 @@ ___
 
 ###  cellsList
 
-• **get cellsList**(): *Array‹[SpredsheedCell](_spreadsheetreader_.md#spredsheedcell)›*
+• **get cellsList**(): *Array‹[SpredsheedCell](spreadsheetreader.md#spredsheedcell)›*
 
 *Defined in [spreadsheetReader.ts:48](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L48)*
 
 List od cells loaded from google spreadsheet
 
-**Returns:** *Array‹[SpredsheedCell](_spreadsheetreader_.md#spredsheedcell)›*
+**Returns:** *Array‹[SpredsheedCell](spreadsheetreader.md#spredsheedcell)›*
 
 ___
 
@@ -157,13 +157,13 @@ ___
 
 ###  rawJson
 
-• **get rawJson**(): *[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)*
+• **get rawJson**(): *[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)*
 
 *Defined in [spreadsheetReader.ts:38](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L38)*
 
 get raw JSON loaded from google spreadsheet
 
-**Returns:** *[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)*
+**Returns:** *[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)*
 
 ___
 
@@ -313,19 +313,19 @@ ___
 
 ###  loadSpreadsheetData
 
-▸ **loadSpreadsheetData**(): *Promise‹[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)›*
+▸ **loadSpreadsheetData**(): *Promise‹[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)›*
 
 *Defined in [spreadsheetReader.ts:105](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L105)*
 
 Load spreadsheet data
 
-**Returns:** *Promise‹[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)›*
+**Returns:** *Promise‹[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)›*
 
 ___
 
 ### `Protected` processSpreadsheets
 
-▸ **processSpreadsheets**(`rawJson`: [GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)): *[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)*
+▸ **processSpreadsheets**(`rawJson`: [GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)): *[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)*
 
 *Defined in [spreadsheetReader.ts:88](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L88)*
 
@@ -333,15 +333,15 @@ ___
 
 Name | Type |
 ------ | ------ |
-`rawJson` | [GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet) |
+`rawJson` | [GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet) |
 
-**Returns:** *[GoogleJsonSpreadsheet](_spreadsheetreader_.md#googlejsonspreadsheet)*
+**Returns:** *[GoogleJsonSpreadsheet](spreadsheetreader.md#googlejsonspreadsheet)*
 
 ___
 
 ### `Static` `Protected` formatColl
 
-▸ **formatColl**(`cells`: Array‹[SpredsheedCell](_spreadsheetreader_.md#spredsheedcell)›, `maxColl`: string): *Array‹string | undefined›*
+▸ **formatColl**(`cells`: Array‹[SpredsheedCell](spreadsheetreader.md#spredsheedcell)›, `maxColl`: string): *Array‹string | undefined›*
 
 *Defined in [spreadsheetReader.ts:220](https://github.com/hubjac1/simple-spreadsheet-reader/blob/2166dbf/src/spreadsheetReader.ts#L220)*
 
@@ -349,7 +349,7 @@ ___
 
 Name | Type |
 ------ | ------ |
-`cells` | Array‹[SpredsheedCell](_spreadsheetreader_.md#spredsheedcell)› |
+`cells` | Array‹[SpredsheedCell](spreadsheetreader.md#spredsheedcell)› |
 `maxColl` | string |
 
 **Returns:** *Array‹string | undefined›*

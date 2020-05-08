@@ -6,4 +6,4 @@
 
 ### Modules
 
-* ["spreadsheetReader"](_spreadsheetreader_.md)
+* ["spreadsheetReader"](spreadsheetreader.md)

@@ -96,8 +96,8 @@ If you receive the response below, please go back to Section 2: Publishing your 
 
 ### modules
 
-["spreadsheetReader"](_spreadsheetreader_.md)
+["spreadsheetReader"](spreadsheetreader.md)
 
 ### Classes
 
-[SpreadsheetReader](_spreadsheetreader_.spreadsheetreader.md)
+[SpreadsheetReader](class-spreadsheetreader.md)
