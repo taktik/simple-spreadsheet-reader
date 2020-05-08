@@ -1,4 +1,5 @@
 [![NPM version][npm-image]][npm-url]
+[![Build Status](https://travis-ci.org/hubjac1/simple-spreadsheet-reader.svg?branch=master)](https://travis-ci.org/hubjac1/simple-spreadsheet-reader)
 
 # simple-spreadsheet-reader
 
