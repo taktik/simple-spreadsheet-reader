@@ -10,7 +10,8 @@
     "prepublish": "npm run build",
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
-    "build": "tsc"
+    "build": "tsc",
+    "doc": "typedoc --plugin typedoc-plugin-markdown --out ./docs ./src"
   },
   "keywords": [
     "reader",
@@ -32,19 +33,9 @@
     "@types/mocha": "^7.0.2",
     "@types/sinon": "^9.0.0",
     "@types/sinon-chai": "^3.2.4",
-    "chai": "^4.2.0",
-    "karma": "^5.0.4",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-mocha": "^2.0.1",
-    "karma-webpack": "^4.0.2",
-    "mocha": "^7.1.2",
-    "sinon": "^9.0.2",
-    "ts-loader": "^7.0.2",
-    "typedoc": "^0.17.6",
-    "typescript": "^3.8.3",
-    "webpack": "^4.43.0",
     "@typescript-eslint/eslint-plugin": "2.26.0",
     "@typescript-eslint/parser": "2.26.0",
+    "chai": "^4.2.0",
     "eslint": "6.8.0",
     "eslint-config-standard": "14.1.1",
     "eslint-plugin-import": "2.20.2",
@@ -52,7 +43,18 @@
     "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.1",
     "husky": "^4.2.5",
-    "lint-staged": "^10.2.2"
+    "karma": "^5.0.4",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-mocha": "^2.0.1",
+    "karma-webpack": "^4.0.2",
+    "lint-staged": "^10.2.2",
+    "mocha": "^7.1.2",
+    "sinon": "^9.0.2",
+    "ts-loader": "^7.0.2",
+    "typedoc": "^0.17.6",
+    "typedoc-plugin-markdown": "^2.2.17",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0"
   },
   "husky": {
     "hooks": {

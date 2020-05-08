@@ -1,3 +1,5 @@
+[simple-spreadsheet-reader](index.md) › [Globals](globals.md)
+
 # simple-spreadsheet-reader
 
 A simple reader for a Google spreadsheet publish on web.
@@ -59,32 +61,29 @@ Result
 Step 1:
 
 Click File > Publish to the web…
-![](docs/doc-data/publish-spreadsheet.png)
+![](doc-data/publish-spreadsheet.png)
 
 Step 2:
 
 Click Publish, then OK
-![](docs/doc-data/publish.png)
+![](doc-data/publish.png)
 
 Step 3:
 
 Don't use the link from here.
-![](docs/doc-data/publish-confirmation.png)
-
+![](doc-data/publish-confirmation.png)
 
 But copy the URL or the spreadsheet ID form the sheet URL
-![](docs/doc-data/spreadsheet-id.png)
+![](doc-data/spreadsheet-id.png)
 
 ### Common Error
 
-![](docs/doc-data/error-1.png)
+![](doc-data/error-1.png)
 
 If you receive the response below, please go back to Section 2: Publishing your Google Sheets to the web.
 
-![](docs/doc-data/error-2.png)
-
+![](doc-data/error-2.png)
 
 ## Api
-
 
 ## Development
