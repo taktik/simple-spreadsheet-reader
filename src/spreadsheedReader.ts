@@ -149,7 +149,7 @@ export class SpreadsheedReader {
 	 *
 	 * *id*
 	 * - All data Element have id="ssr-${cellID}"
-	 * 
+	 *
 	 * *results HTML*
 	 *
 	 * ```html
@@ -200,7 +200,7 @@ export class SpreadsheedReader {
 	 */
 	getTable(): Node{
 		if( this._xmlError) {
-			var template = document.createElement('template');
+			const template = document.createElement('template');
 			template.innerHTML = this._xmlError.trim()
 
 			if (template.content && template.content.firstChild)
