@@ -11,7 +11,8 @@
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
     "build": "tsc",
-    "doc": "typedoc --plugin typedoc-plugin-markdown --out ./temp ./src"
+    "doc": "typedoc --plugin typedoc-plugin-markdown --out ./temp ./src",
+    "release": "release-it"
   },
   "keywords": [
     "reader",
@@ -49,6 +50,7 @@
     "karma-webpack": "^4.0.2",
     "lint-staged": "^10.2.2",
     "mocha": "^7.1.2",
+    "release-it": "^13.5.8",
     "sinon": "^9.0.2",
     "ts-loader": "^7.0.2",
     "typedoc": "^0.17.6",
