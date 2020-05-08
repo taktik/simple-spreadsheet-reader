@@ -1,6 +1,10 @@
+[![NPM version][npm-image]][npm-url]
+
 # simple-spreadsheet-reader
 
 A simple reader for a Google spreadsheet publish on web.
+
+See documentation at [https://hubjac1.github.io/simple-spreadsheet-reader/](https://hubjac1.github.io/simple-spreadsheet-reader/)
 
 ## Usage
 
@@ -84,7 +88,10 @@ If you receive the response below, please go back to Section 2: Publishing your 
 ![](docs/doc-data/error-2.png)
 
 
-## Api
-
 
 ## Development
+
+
+[npm-image]: https://badge.fury.io/js/ozone-typescript-client.svg
+[npm-url]: https://npmjs.org/package/ozone-typescript-client
+
