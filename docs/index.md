@@ -4,6 +4,14 @@
 
 A simple reader for a Google spreadsheet publish on web.
 
+* [Usage](index.md#usage)
+* [Publishing your Google Sheets to the web](index.md#publishing-your-Google-Sheets-to-the-web)
+* [Common Errors](index.md#common-errord)
+* [Api](index.md#api)
+* [modules](index.md#modules)
+* [Classes](index.md#classes)
+
+
 ## Usage
 
 Install the module from npm with `npm install --save simple-spreadsheet-reader`
@@ -56,7 +64,7 @@ Result
 		</table>
 ```
 
-### Publishing your Google Sheets to the web
+## Publishing your Google Sheets to the web
 
 Step 1:
 
@@ -76,7 +84,7 @@ Don't use the link from here.
 But copy the URL or the spreadsheet ID form the sheet URL
 ![](doc-data/spreadsheet-id.png)
 
-### Common Error
+### Common Errors
 
 ![](doc-data/error-1.png)
 
@@ -86,4 +94,10 @@ If you receive the response below, please go back to Section 2: Publishing your 
 
 ## Api
 
-## Development
+### modules
+
+["spreadsheetReader"](_spreadsheetreader_.md)
+
+### Classes
+
+[SpreadsheetReader](_spreadsheetreader_.spreadsheetreader.md)

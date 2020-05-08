@@ -6,5 +6,4 @@
 
 ### Modules
 
-* ["index"](modules/_index_.md)
-* ["spreadsheedReader"](modules/_spreadsheedreader_.md)
+* ["spreadsheetReader"](_spreadsheetreader_.md)

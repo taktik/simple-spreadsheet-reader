@@ -58,7 +58,7 @@ Result
 		</table>
 ```
 
-### Publishing your Google Sheets to the web
+## Publishing your Google Sheets to the web
 
 Step 1:
 
@@ -92,6 +92,6 @@ If you receive the response below, please go back to Section 2: Publishing your 
 ## Development
 
 
-[npm-image]: https://badge.fury.io/js/ozone-typescript-client.svg
-[npm-url]: https://npmjs.org/package/ozone-typescript-client
+[npm-image]: https://badge.fury.io/js/simple-spreadsheet-reader.svg
+[npm-url]: https://npmjs.org/package/simple-spreadsheet-reader
 

@@ -11,7 +11,7 @@
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
     "build": "tsc",
-    "doc": "typedoc --plugin typedoc-plugin-markdown --out ./docs ./src"
+    "doc": "typedoc --plugin typedoc-plugin-markdown --out ./temp ./src"
   },
   "keywords": [
     "reader",

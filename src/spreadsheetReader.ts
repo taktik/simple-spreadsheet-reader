@@ -16,7 +16,7 @@ export type GoogleJsonSpreadsheet = { [key: string]: any }
 /**
  * A simple reader for a Google spreadsheet publish on web.
  */
-export class SpreadsheedReader {
+export class SpreadsheetReader {
 	protected spreadsheetsIs?: string
 	protected httpClient: httpclient.HttpClient
 	protected _xmlError?: string
@@ -132,8 +132,8 @@ export class SpreadsheedReader {
 	getAllLines(): Array<Array<string | undefined>>{
 		const cellsByRaws = groupBy(this.cellsList, (cell) => cell.rows)
 		const results: Array<Array<string | undefined>> = []
-		for(const i of SpreadsheedReader.numberGenerator(this.maxRaw)){
-			results.push( SpreadsheedReader.formatColl(cellsByRaws[i] || [], this.maxColl))
+		for(const i of SpreadsheetReader.numberGenerator(this.maxRaw)){
+			results.push( SpreadsheetReader.formatColl(cellsByRaws[i] || [], this.maxColl))
 		}
 		return results
 	}
@@ -220,7 +220,7 @@ export class SpreadsheedReader {
 	protected static formatColl(cells: Array<SpredsheedCell>, maxColl: string): Array<string | undefined>{
 		const cellsByColl = groupBy(cells, (cell) => cell.coll)
 		const results: Array<string> = []
-		for(const  i of SpreadsheedReader.lettersGenerator(maxColl)){
+		for(const  i of SpreadsheetReader.lettersGenerator(maxColl)){
 			const cell: any = (cellsByColl[i] || [{ value: undefined}])[0]
 			results.push(cell.value)
 		}
@@ -253,17 +253,17 @@ export class SpreadsheedReader {
 		const tableHead = document.createElement('thead');
 		const rowHead = document.createElement('tr');
 		rowHead.appendChild(this.createHeadCell(''));
-		Array.from(SpreadsheedReader.lettersGenerator(maxCell)).forEach((collId) => {
+		Array.from(SpreadsheetReader.lettersGenerator(maxCell)).forEach((collId) => {
 			rowHead.appendChild(this.createHeadCell(collId));
 		});
 		tableHead.appendChild(rowHead);
 		table.appendChild(tableHead);
 
 		const tableBody = document.createElement('tbody');
-		Array.from(SpreadsheedReader.numberGenerator(maxRaw)).forEach((rowId) => {
+		Array.from(SpreadsheetReader.numberGenerator(maxRaw)).forEach((rowId) => {
 			const row = document.createElement('tr');
 			row.appendChild(this.createHeadCell(`${rowId}`));
-			Array.from(SpreadsheedReader.lettersGenerator(maxCell)).forEach((collId) => {
+			Array.from(SpreadsheetReader.lettersGenerator(maxCell)).forEach((collId) => {
 				const cell = document.createElement('td');
 				const cellId = collId + rowId
 				cell.id = `ssr-${cellId}`

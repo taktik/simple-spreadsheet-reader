@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import sinon, { SinonFakeServer } from 'sinon'
 import sampleData from './data.json'
 import { template } from 'lodash'
-import { SpreadsheedReader } from '../src/spreadsheedReader'
+import { SpreadsheetReader } from '../src/spreadsheetReader'
 import { expectedTable } from './table'
 
 describe('spredsheedReader', () => {
@@ -31,21 +31,21 @@ describe('spredsheedReader', () => {
 	})
 	describe('constructor', () => {
 		it('should build spreadsheetsIs from on URL', async () => {
-			const spredsheedReader = new SpreadsheedReader('https://docs.google.com/spreadsheets/d/spr1ea_dsh$eets-randomID/edit#gid=0')
+			const spredsheedReader = new SpreadsheetReader('https://docs.google.com/spreadsheets/d/spr1ea_dsh$eets-randomID/edit#gid=0')
 			expect(spredsheedReader.spreadsheetsIs).to.equal('spr1ea_dsh$eets-randomID')
 		})
 		it('should store spreadsheet id', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID')
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
 			expect(spredsheedReader.spreadsheetsIs).to.equal('spreadsheets-randomID')
 		})
 		it('should not set spreadsheetsIs an error for invalid URL', async () => {
-			const spredsheedReader = new SpreadsheedReader('https://foo.bar')
+			const spredsheedReader = new SpreadsheetReader('https://foo.bar')
 			expect(spredsheedReader.spreadsheetsIs).to.be.undefined
 		})
 	})
 	describe('loadRawJson', () => {
 		it('should load valid spreadsheetsJson from spreadsheet id', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID')
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			const rawJson = await loadingRawJson
@@ -53,7 +53,7 @@ describe('spredsheedReader', () => {
 			expect(spredsheedReader.xmlError).to.be.undefined
 		})
 		it('should cache valid spreadsheetsJson', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID')
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			await loadingRawJson
@@ -61,7 +61,7 @@ describe('spredsheedReader', () => {
 			expect(spredsheedReader.xmlError).to.be.undefined
 		})
 		it('should cache valid cellList', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID')
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			await loadingRawJson
@@ -76,21 +76,21 @@ describe('spredsheedReader', () => {
 			})
 		})
 		it('should cache maxRaw value', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID')
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			await loadingRawJson
 			expect(spredsheedReader.maxRaw).to.equal(4)
 		})
 		it('should cache maxColl value', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID')
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			await loadingRawJson
 			expect(spredsheedReader.maxColl).to.equal('E')
 		})
 		it('should fill xmlError for invalid spreadsheets', async () => {
-			const spredsheedReader = new SpreadsheedReader('invalid-spreadsheet')
+			const spredsheedReader = new SpreadsheetReader('invalid-spreadsheet')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			try {
@@ -101,7 +101,7 @@ describe('spredsheedReader', () => {
 			}
 		})
 		it('should throw and error for invalid spreadsheets', async () => {
-			const spredsheedReader = new SpreadsheedReader('invalid-spreadsheet')
+			const spredsheedReader = new SpreadsheetReader('invalid-spreadsheet')
 			const loadingRawJson = spredsheedReader.loadSpreadsheetData()
 			server.respond()
 			try {
@@ -114,19 +114,19 @@ describe('spredsheedReader', () => {
 	})
 	describe('getCellValue', () => {
 		it('should return text for a1', () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID');
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any)._rawJson = sampleData
 			const value = spredsheedReader.getCellValue('a1')
 			expect(value).to.equal('text')
 		})
 		it('should return Hello for B2', () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID');
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any)._rawJson = sampleData
 			const value = spredsheedReader.getCellValue('B2')
 			expect(value).to.equal('Hello')
 		})
 		it('should return undefined for D1', () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID');
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any)._rawJson = sampleData
 			const value = spredsheedReader.getCellValue('D1')
 			expect(value).to.be.undefined
@@ -134,7 +134,7 @@ describe('spredsheedReader', () => {
 	})
 	describe('getAllLines', () => {
 		it('should return all the lignes', () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID');
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any).processSpreadsheets(sampleData)
 			const value = spredsheedReader.getAllLines()
 			expect(value).to.be.deep.equals([
@@ -147,23 +147,23 @@ describe('spredsheedReader', () => {
 	})
 	describe('generate grid', () => {
 		it('lettersGenerator should return letters from A to Z', () => {
-			const letters = Array.from((SpreadsheedReader as any).lettersGenerator('Z'))
+			const letters = Array.from((SpreadsheetReader as any).lettersGenerator('Z'))
 			expect(letters).to.be.deep.equals(Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
 		})
 		it('numberGenerator should return Numbers from 1 to 1000', () => {
-			const numbers = Array.from((SpreadsheedReader as any).numberGenerator(1000))
+			const numbers = Array.from((SpreadsheetReader as any).numberGenerator(1000))
 			expect(numbers).to.have.length(1000)
 			expect(numbers[0]).to.be.equal(1)
 			expect(numbers[999]).to.be.equal(1000)
 		})
 		it('should return table in HTMLElement for valid data', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID');
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any).processSpreadsheets(sampleData)
 			const xml = spredsheedReader.getTable()
 			expect(xml.innerHTML).to.be.equal(expectedTable)
 		})
 		it('should return HTMLElement of error message for invalid data', async () => {
-			const spredsheedReader = new SpreadsheedReader('spreadsheets-randomID');
+			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any)._xmlError = '<div>An error <b>Message</b></div>'
 			const xml = spredsheedReader.getTable()
 			expect(xml.innerHTML).to.be.equal('An error <b>Message</b>')
