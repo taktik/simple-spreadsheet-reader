@@ -85,7 +85,14 @@ export class SpreadsheetReader {
 		}
 	}
 
-	protected processSpreadsheets(rawJson: GoogleJsonSpreadsheet): GoogleJsonSpreadsheet {
+	protected processSpreadsheets(rawResponce: GoogleJsonSpreadsheet | string): GoogleJsonSpreadsheet {
+		let rawJson: GoogleJsonSpreadsheet
+		if( typeof rawResponce === 'string') {
+			rawJson = JSON.parse(rawResponce)
+		} else {
+			rawJson = rawResponce
+		}
+
 		this._cellsList = search(rawJson, `feed.entry[*].{cell: title."$t", value: content."$t"}`)
 			.map(elem => {
 				const parcedCell = /([A-Z]+)([0-9]+)/.exec(elem.cell)
@@ -108,7 +115,7 @@ export class SpreadsheetReader {
 				throw Error('Invalid spreadsheetsIs')
 			}
 			const url = `https://spreadsheets.google.com/feeds/cells/${this.spreadsheetsId}/1/public/full?alt=json`
-			const request = new Request(url, { method: 'GET', contentType: 'text'})
+			const request = new Request(url, { method: 'GET', responseType: 'text'})
 
 			return this.processSpreadsheets(await this.httpClient.execute(request))
 		} catch (error) {

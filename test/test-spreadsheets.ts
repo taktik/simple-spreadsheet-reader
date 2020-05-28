@@ -100,7 +100,7 @@ describe('spredsheedReader', () => {
 				await loadingRawJson
 				expect(false).to.be.equal(true, 'error not throw loadRawJson')
 			} catch (e) {
-				expect(spredsheedReader.xmlError).to.equal('<body>Error message</body>')
+				expect(spredsheedReader.xmlError).to.equal('"<body>Error message</body>"')
 			}
 		})
 		it('should throw and error for invalid spreadsheets', async () => {
