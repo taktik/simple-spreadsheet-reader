@@ -17,7 +17,7 @@ export type GoogleJsonSpreadsheet = { [key: string]: any }
  * A simple reader for a Google spreadsheet publish on web.
  */
 export class SpreadsheetReader {
-	protected spreadsheetsIs?: string
+	protected spreadsheetsId?: string
 	protected httpClient: httpclient.HttpClient
 	protected _xmlError?: string
 	protected _rawJson?: GoogleJsonSpreadsheet
@@ -78,10 +78,10 @@ export class SpreadsheetReader {
 			const url = new URL(spreadsheetsUrlOrId)
 			const parsed = /spreadsheets\/\w\/(.*)\//.exec(url.pathname)
 			if(parsed) {
-				this.spreadsheetsIs = parsed[1]
+				this.spreadsheetsId = parsed[1]
 			}
 		} catch (e) {
-			this.spreadsheetsIs = spreadsheetsUrlOrId
+			this.spreadsheetsId = spreadsheetsUrlOrId
 		}
 	}
 
@@ -104,11 +104,11 @@ export class SpreadsheetReader {
 	 */
 	async loadSpreadsheetData(): Promise<GoogleJsonSpreadsheet> {
 		try {
-			if( ! this.spreadsheetsIs ) {
+			if( ! this.spreadsheetsId ) {
 				throw Error('Invalid spreadsheetsIs')
 			}
-			const url = `https://spreadsheets.google.com/feeds/cells/${this.spreadsheetsIs}/1/public/full?alt=json`
-			const request = new Request(url, { method: 'GET', contentType: 'application/json'})
+			const url = `https://spreadsheets.google.com/feeds/cells/${this.spreadsheetsId}/1/public/full?alt=json`
+			const request = new Request(url, { method: 'GET', contentType: 'text'})
 
 			return this.processSpreadsheets(await this.httpClient.execute(request))
 		} catch (error) {
@@ -204,7 +204,7 @@ export class SpreadsheetReader {
 			template.innerHTML = this._xmlError.trim()
 
 			if (template.content && template.content.firstChild)
-				return template.content.firstChild
+				return template.content
 			throw Error('Unknow Error')
 		}
 

@@ -30,17 +30,20 @@ describe('spredsheedReader', () => {
 		)
 	})
 	describe('constructor', () => {
-		it('should build spreadsheetsIs from on URL', async () => {
+		it('should build spreadsheetsId from on URL', async () => {
 			const spredsheedReader = new SpreadsheetReader('https://docs.google.com/spreadsheets/d/spr1ea_dsh$eets-randomID/edit#gid=0')
-			expect(spredsheedReader.spreadsheetsIs).to.equal('spr1ea_dsh$eets-randomID')
+			const spreadsheetsId = (spredsheedReader as any).spreadsheetsId
+			expect(spreadsheetsId).to.equal('spr1ea_dsh$eets-randomID')
 		})
 		it('should store spreadsheet id', async () => {
 			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID')
-			expect(spredsheedReader.spreadsheetsIs).to.equal('spreadsheets-randomID')
+			const spreadsheetsId = (spredsheedReader as any).spreadsheetsId
+			expect(spreadsheetsId).to.equal('spreadsheets-randomID')
 		})
-		it('should not set spreadsheetsIs an error for invalid URL', async () => {
+		it('should not set spreadsheetsId an error for invalid URL', async () => {
 			const spredsheedReader = new SpreadsheetReader('https://foo.bar')
-			expect(spredsheedReader.spreadsheetsIs).to.be.undefined
+			const spreadsheetsId = (spredsheedReader as any).spreadsheetsId
+			expect(spreadsheetsId).to.be.undefined
 		})
 	})
 	describe('loadRawJson', () => {
@@ -160,13 +163,13 @@ describe('spredsheedReader', () => {
 			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
 			(spredsheedReader as any).processSpreadsheets(sampleData)
 			const xml = spredsheedReader.getTable()
-			expect(xml.innerHTML).to.be.equal(expectedTable)
+			expect((xml as HTMLTableElement).innerHTML).to.be.equal(expectedTable)
 		})
 		it('should return HTMLElement of error message for invalid data', async () => {
 			const spredsheedReader = new SpreadsheetReader('spreadsheets-randomID');
-			(spredsheedReader as any)._xmlError = '<div>An error <b>Message</b></div>'
+			(spredsheedReader as any)._xmlError = '<!DOCTYPE html><html lang="fr"><div>An error <b>Message</b></div></html>'
 			const xml = spredsheedReader.getTable()
-			expect(xml.innerHTML).to.be.equal('An error <b>Message</b>')
+			expect((xml.firstChild as HTMLElement).innerHTML).to.be.equal('An error <b>Message</b>')
 		})
 	})
 })
