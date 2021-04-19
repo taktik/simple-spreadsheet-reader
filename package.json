@@ -1,5 +1,5 @@
 {
-  "name": "taktik-simple-spreadsheet-reader",
+  "name": "@taktik/simple-spreadsheet-reader",
   "version": "1.0.0",
   "description": "simple reader for public google spredsheet",
   "main": "dist/index.js",
