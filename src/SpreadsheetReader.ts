@@ -139,7 +139,7 @@ export class SpreadsheetReader {
 	async loadSpreadsheetData(): Promise<void> {
 		try {
 			if( ! this.spreadsheetsId ) {
-				throw Error('Invalid spreadsheetsIs')
+				throw Error('Invalid spreadsheetsId')
 			}
 
 			// We don't want to run all the requests everytime
@@ -329,4 +329,3 @@ export class SpreadsheetReader {
 		return table
 	}
 }
-
