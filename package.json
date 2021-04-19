@@ -4,7 +4,7 @@
   "description": "simple reader for public google spredsheet",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/hubjac1/simple-spreadsheet-reader",
+  "repository": "https://github.com/taktik/simple-spreadsheet-reader",
   "scripts": {
     "eslint": "eslint 'src/*.ts'",
     "prepublish": "npm run build",
