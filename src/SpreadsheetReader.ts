@@ -13,17 +13,48 @@ export type SpredsheedCell = {
 
 export type GoogleJsonSpreadsheet = { [key: string]: any }
 
+interface ISheetsData {
+	rawJson?: GoogleJsonSpreadsheet
+	cellsList?: Array<SpredsheedCell>
+	maxRow?: number
+	maxColl?: string
+}
 /**
  * A simple reader for a Google spreadsheet publish on web.
  */
-export class SpreadsheedReader {
-	protected spreadsheetsIs?: string
+export class SpreadsheetReader {
+	private _currentPage = 0
+	private sheetsData: ISheetsData[] = []
+	protected spreadsheetsId?: string
 	protected httpClient: httpclient.HttpClient
 	protected _xmlError?: string
-	protected _rawJson?: GoogleJsonSpreadsheet
-	protected _cellsList?: Array<SpredsheedCell>
-	protected _maxRaw?: number
-	protected _maxColl?: string
+
+	/**
+	 * gets the current page, indexed at 0
+	 */
+	get currentPage(): number {
+		return this._currentPage
+	}
+	/**
+	 * sets the current page, indexed at 0
+	 */
+	set currentPage(page: number) {
+		if(page >= 0 && page < this.numberOfPages) {
+			this._currentPage = page
+		} else {
+			throw Error(`The new page value should be included in [0;${this.numberOfPages}[`)
+		}
+	}
+
+	/**
+	 * get the total number of pages the sheet has
+	 */
+	get numberOfPages(): number {
+		if(this.sheetsData.length > 0) {
+			return this.sheetsData.length
+		}
+		throw Error('No data, call loadSpreadsheetData first')
+	}
 
 	/**
 	 * XML string of the error message
@@ -36,40 +67,44 @@ export class SpreadsheedReader {
 	 * get raw JSON loaded from google spreadsheet
 	 */
 	get rawJson(): GoogleJsonSpreadsheet {
-		if(this._rawJson) {
-			return this._rawJson
+		const rawJson = this.sheetsData[this.currentPage].rawJson
+		if(rawJson) {
+			return rawJson
 		}
-		throw Error('No data, loadRawJson first')
+		throw Error('No data, call loadSpreadsheetData first')
 	}
 
 	/**
 	 * List od cells loaded from google spreadsheet
 	 */
 	get cellsList(): Array<SpredsheedCell> {
-		if(this._cellsList) {
-			return this._cellsList
+		const cellsList = this.sheetsData[this.currentPage].cellsList
+		if(cellsList) {
+			return cellsList
 		}
-		throw Error('No data, loadRawJson first')
+		throw Error('No data, call loadSpreadsheetData first')
 	}
 
 	/**
 	 * get the number of raw used in the spreadsheet
 	 */
-	get maxRaw(): number {
-		if(this._maxRaw) {
-			return this._maxRaw
+	get maxRow(): number {
+		const maxRow = this.sheetsData[this.currentPage].maxRow
+		if(maxRow) {
+			return maxRow
 		}
-		throw Error('No data, loadRawJson first')
+		throw Error('No data, call loadSpreadsheetData first')
 	}
 
 	/**
 	 * get the number of column used in the spreadsheet.
 	 */
 	get maxColl(): string {
-		if(this._maxColl) {
-			return this._maxColl
+		const maxColl = this.sheetsData[this.currentPage].maxColl
+		if(maxColl) {
+			return maxColl
 		}
-		throw Error('No data, loadRawJson first')
+		throw Error('No data, call loadSpreadsheetData first')
 	}
 
 	constructor(spreadsheetsUrlOrId: string) {
@@ -78,39 +113,53 @@ export class SpreadsheedReader {
 			const url = new URL(spreadsheetsUrlOrId)
 			const parsed = /spreadsheets\/\w\/(.*)\//.exec(url.pathname)
 			if(parsed) {
-				this.spreadsheetsIs = parsed[1]
+				this.spreadsheetsId = parsed[1]
 			}
 		} catch (e) {
-			this.spreadsheetsIs = spreadsheetsUrlOrId
+			this.spreadsheetsId = spreadsheetsUrlOrId
 		}
 	}
 
-	protected processSpreadsheets(rawJson: GoogleJsonSpreadsheet): GoogleJsonSpreadsheet {
-		this._cellsList = search(rawJson, `feed.entry[*].{cell: title."$t", value: content."$t"}`)
+	protected processSpreadsheet(rawJson: GoogleJsonSpreadsheet): ISheetsData {
+		const cellsList = search(rawJson, `feed.entry[*].{cell: title."$t", value: content."$t"}`)
 			.map(elem => {
 				const parcedCell = /([A-Z]+)([0-9]+)/.exec(elem.cell)
 				if(parcedCell === null) throw Error('Error in spredsheet format')
 				const [cellId, coll, rows] = parcedCell
 				return Object.assign({ rows, coll, cellId, collNb: coll.charCodeAt(0) }, elem)
 			})
-		this._rawJson = rawJson
-		this._maxRaw = Number(search(this.cellsList, 'max_by([*], &rows).rows'))
-		this._maxColl = String.fromCharCode(search(this.cellsList, 'max_by([*], &collNb).collNb'))
-		return this._rawJson
+		const maxRow = Number(search(cellsList, 'max_by([*], &rows).rows'))
+		const maxColl = String.fromCharCode(search(cellsList, 'max_by([*], &collNb).collNb'))
+		return {cellsList, rawJson, maxRow, maxColl}
 	}
 
 	/**
 	 * Load spreadsheet data
 	 */
-	async loadSpreadsheetData(): Promise<GoogleJsonSpreadsheet> {
+	async loadSpreadsheetData(): Promise<void> {
 		try {
-			if( ! this.spreadsheetsIs ) {
+			if( ! this.spreadsheetsId ) {
 				throw Error('Invalid spreadsheetsIs')
 			}
-			const url = `https://spreadsheets.google.com/feeds/cells/${this.spreadsheetsIs}/1/public/full?alt=json`
-			const request = new Request(url, { method: 'GET', contentType: 'application/json'})
 
-			return this.processSpreadsheets(await this.httpClient.execute(request))
+			// We don't want to run all the requests everytime
+			if(!this.sheetsData.length) {
+				let shouldContinue = true
+				let pageNumber = 1
+				// We can't know the number of pages a sheet has
+				// so we must try to load each page until the request fails
+				while(shouldContinue) {
+					const url = `https://spreadsheets.google.com/feeds/cells/${this.spreadsheetsId}/${pageNumber}/public/full?alt=json`
+					const request = new Request(url, { method: 'GET', contentType: 'application/json'})
+					try {
+						const jsonData: ISheetsData = await this.httpClient.execute(request)
+						this.sheetsData = [...this.sheetsData, this.processSpreadsheet(jsonData)]
+						pageNumber++
+					} catch(e) {
+						shouldContinue = false
+					}
+				}
+			}
 		} catch (error) {
 			const requestError: httpclient.Response<any> = error
 			this._xmlError = requestError.body || error.message
@@ -121,8 +170,10 @@ export class SpreadsheedReader {
 	/**
 	 * get value of a cell
 	 * @param cellId
+	 * @param page
 	 */
-	getCellValue(cellId: string): string | undefined{
+	getCellValue(cellId: string, page = 0): string | undefined {
+		this.currentPage = page
 		return search(this.rawJson, `feed.entry[*].{cell: title."$t", value: content."$t"}[?cell=='${cellId.toUpperCase()}'].value`)[0]
 	}
 
@@ -132,8 +183,8 @@ export class SpreadsheedReader {
 	getAllLines(): Array<Array<string | undefined>>{
 		const cellsByRaws = groupBy(this.cellsList, (cell) => cell.rows)
 		const results: Array<Array<string | undefined>> = []
-		for(const i of SpreadsheedReader.numberGenerator(this.maxRaw)){
-			results.push( SpreadsheedReader.formatColl(cellsByRaws[i] || [], this.maxColl))
+		for(const i of SpreadsheetReader.numberGenerator(this.maxRow)){
+			results.push( SpreadsheetReader.formatColl(cellsByRaws[i] || [], this.maxColl))
 		}
 		return results
 	}
@@ -208,7 +259,7 @@ export class SpreadsheedReader {
 			throw Error('Unknow Error')
 		}
 
-		const table = this.generateTable(this.maxRaw, this.maxColl)
+		const table = this.generateTable(this.maxRow, this.maxColl)
 		this.cellsList.forEach(cell => {
 			const cellContain = document.createTextNode(cell.value || '')
 			const cellElem = table.querySelector(`#ssr-${cell.cell}`)
@@ -220,7 +271,7 @@ export class SpreadsheedReader {
 	protected static formatColl(cells: Array<SpredsheedCell>, maxColl: string): Array<string | undefined>{
 		const cellsByColl = groupBy(cells, (cell) => cell.coll)
 		const results: Array<string> = []
-		for(const  i of SpreadsheedReader.lettersGenerator(maxColl)){
+		for(const  i of SpreadsheetReader.lettersGenerator(maxColl)){
 			const cell: any = (cellsByColl[i] || [{ value: undefined}])[0]
 			results.push(cell.value)
 		}
@@ -246,24 +297,24 @@ export class SpreadsheedReader {
 		return cell
 	}
 
-	protected generateTable(maxRaw: number, maxCell: string): HTMLTableElement {
+	protected generateTable(maxRow: number, maxCell: string): HTMLTableElement {
 		const table = document.createElement('table');
 		table.classList.add('ssr-table')
 
 		const tableHead = document.createElement('thead');
 		const rowHead = document.createElement('tr');
 		rowHead.appendChild(this.createHeadCell(''));
-		Array.from(SpreadsheedReader.lettersGenerator(maxCell)).forEach((collId) => {
+		Array.from(SpreadsheetReader.lettersGenerator(maxCell)).forEach((collId) => {
 			rowHead.appendChild(this.createHeadCell(collId));
 		});
 		tableHead.appendChild(rowHead);
 		table.appendChild(tableHead);
 
 		const tableBody = document.createElement('tbody');
-		Array.from(SpreadsheedReader.numberGenerator(maxRaw)).forEach((rowId) => {
+		Array.from(SpreadsheetReader.numberGenerator(maxRow)).forEach((rowId) => {
 			const row = document.createElement('tr');
 			row.appendChild(this.createHeadCell(`${rowId}`));
-			Array.from(SpreadsheedReader.lettersGenerator(maxCell)).forEach((collId) => {
+			Array.from(SpreadsheetReader.lettersGenerator(maxCell)).forEach((collId) => {
 				const cell = document.createElement('td');
 				const cellId = collId + rowId
 				cell.id = `ssr-${cellId}`
