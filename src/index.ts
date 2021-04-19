@@ -1,1 +1,1 @@
-export * from './spreadsheetReader'
+export * from './SpreadsheetReader'
