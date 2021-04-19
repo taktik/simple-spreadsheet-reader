@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
-		"target": "es6",
+		"target": "es5",
 		"module": "esnext",
 		// Use esnext to enable lazy loading
 		"moduleResolution": "node",
 		"experimentalDecorators": true,
-		//
+		"downlevelIteration": true,
 		"emitDecoratorMetadata": true,
 		"strictNullChecks": true,
 		"resolveJsonModule": true,

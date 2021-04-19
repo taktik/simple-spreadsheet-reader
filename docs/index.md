@@ -1,11 +1,16 @@
-[![NPM version][npm-image]][npm-url]
-[![Build Status](https://travis-ci.org/hubjac1/simple-spreadsheet-reader.svg?branch=master)](https://travis-ci.org/hubjac1/simple-spreadsheet-reader)
+[simple-spreadsheet-reader](index.md) › [Globals](globals.md)
 
 # simple-spreadsheet-reader
 
 A simple reader for a Google spreadsheet publish on web.
 
-See documentation at [https://hubjac1.github.io/simple-spreadsheet-reader/](https://hubjac1.github.io/simple-spreadsheet-reader/)
+* [Usage](index.md#usage)
+* [Publishing your Google Sheets to the web](index.md#publishing-your-Google-Sheets-to-the-web)
+* [Common Errors](index.md#common-errord)
+* [Api](index.md#api)
+* [modules](index.md#modules)
+* [Classes](index.md#classes)
+
 
 ## Usage
 
@@ -64,35 +69,35 @@ Result
 Step 1:
 
 Click File > Publish to the web…
-![](docs/doc-data/publish-spreadsheet.png)
+![](doc-data/publish-spreadsheet.png)
 
 Step 2:
 
 Click Publish, then OK
-![](docs/doc-data/publish.png)
+![](doc-data/publish.png)
 
 Step 3:
 
 Don't use the link from here.
-![](docs/doc-data/publish-confirmation.png)
-
+![](doc-data/publish-confirmation.png)
 
 But copy the URL or the spreadsheet ID form the sheet URL
-![](docs/doc-data/spreadsheet-id.png)
+![](doc-data/spreadsheet-id.png)
 
-### Common Error
+### Common Errors
 
-![](docs/doc-data/error-1.png)
+![](doc-data/error-1.png)
 
 If you receive the response below, please go back to Section 2: Publishing your Google Sheets to the web.
 
-![](docs/doc-data/error-2.png)
+![](doc-data/error-2.png)
 
+## Api
 
+### modules
 
-## Development
+["spreadsheetReader"](spreadsheetreader.md)
 
+### Classes
 
-[npm-image]: https://badge.fury.io/js/simple-spreadsheet-reader.svg
-[npm-url]: https://npmjs.org/package/simple-spreadsheet-reader
-
+[SpreadsheetReader](class-spreadsheetreader.md)
