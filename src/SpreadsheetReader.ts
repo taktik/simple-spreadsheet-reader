@@ -1,7 +1,67 @@
 import { httpclient } from 'typescript-http-client'
 import { search } from 'jmespath'
-import { groupBy } from 'lodash'
+import { groupBy, flatten } from 'lodash'
 import Request = httpclient.Request
+
+interface IRGBColors {
+	red: number
+	green: number
+	blue: number
+}
+
+interface ISheetsProperties {
+	properties: {
+		autoRecalc: string
+		defaultFormat: {
+			backgroundColor: IRGBColors
+			backgroundColorStyle: IRGBColors
+			padding: { bottom: number; top: number; right: number; left: number }
+			textFormat: {
+				bold: boolean
+				fontFamily: string
+				fontSize: number
+				foregroundColor?: IRGBColors
+				foregroundColorStyle: { rgbColor?: IRGBColors }
+				static: boolean
+				strikethrough: boolean
+				underline: boolean
+			}
+			verticalAlignment: string
+			wrapStrategy: string
+		}
+		locale: string
+		spreadsheetTheme: {
+			primaryFontFamily: string
+			themeColors: Array<{
+				colorType: string
+				color: { rgbColor?: IRGBColors }
+			}>
+		}
+		timeZone: string
+		title: string
+	}
+	sheets: Array<{
+		properties: {
+			gridProperties: { rowCount: number; columnCount: number }
+			index: number
+			sheetId: number
+			sheetType: string
+			title: string
+		}
+	}>
+	spreadsheetId: string
+	spreadsheetUrl: string
+}
+
+interface ISheetValue {
+	majorDimension: string
+	range: string
+	values: Array<Array<string>>
+}
+
+type ICell = { cell: string; value: string }
+
+type IParsedCells = Array<ICell>
 
 export type SpredsheedCell = {
 	cell: string
@@ -11,18 +71,20 @@ export type SpredsheedCell = {
 	collNb: number
 }
 
-export type GoogleJsonSpreadsheet = { [key: string]: any }
-
 interface ISheetsData {
-	rawJson?: GoogleJsonSpreadsheet
+	parsedCells?: IParsedCells
 	cellsList?: Array<SpredsheedCell>
 	maxRow?: number
 	maxColl?: string
 }
+
+const key = 'AIzaSyCrLUwWIUoJ3Ut46zgs6hyfytURyro9uuY'
+
 /**
  * A simple reader for a Google spreadsheet publish on web.
  */
 export class SpreadsheetReader {
+	private sheetsProperties?: ISheetsProperties
 	private _currentPage = 0
 	private sheetsData: ISheetsData[] = []
 	protected spreadsheetsId?: string
@@ -64,12 +126,12 @@ export class SpreadsheetReader {
 	}
 
 	/**
-	 * get raw JSON loaded from google spreadsheet
+	 * get parsed cells
 	 */
-	get rawJson(): GoogleJsonSpreadsheet {
-		const rawJson = this.sheetsData[this.currentPage].rawJson
-		if (rawJson) {
-			return rawJson
+	get parsedCells(): IParsedCells {
+		const parsedCells = this.sheetsData[this.currentPage].parsedCells
+		if (parsedCells) {
+			return parsedCells
 		}
 		throw Error('No data, call loadSpreadsheetData first')
 	}
@@ -120,46 +182,67 @@ export class SpreadsheetReader {
 		}
 	}
 
-	protected processSpreadsheet(rawJson: GoogleJsonSpreadsheet): ISheetsData {
-		const cellsList = search(rawJson, `feed.entry[*].{cell: title."$t", value: content."$t"}`).map(
-			(elem) => {
-				const parcedCell = /([A-Z]+)([0-9]+)/.exec(elem.cell)
-				if (parcedCell === null) throw Error('Error in spredsheet format')
-				const [cellId, coll, rows] = parcedCell
-				return Object.assign({ rows, coll, cellId, collNb: coll.charCodeAt(0) }, elem)
-			}
-		)
+	protected processSpreadsheet(parsedCells: IParsedCells): ISheetsData {
+		const cellsList = parsedCells.map((elem) => {
+			const parcedCell = /([A-Z]+)([0-9]+)/.exec(elem.cell)
+			if (parcedCell === null) throw Error('Error in spredsheet format')
+			const [cellId, coll, rows] = parcedCell
+			return Object.assign({ rows, coll, cellId, collNb: coll.charCodeAt(0) }, elem)
+		})
 		const maxRow = Number(search(cellsList, 'max_by([*], &rows).rows'))
 		const maxColl = String.fromCharCode(search(cellsList, 'max_by([*], &collNb).collNb'))
-		return { cellsList, rawJson, maxRow, maxColl }
+		return { cellsList, parsedCells, maxRow, maxColl }
+	}
+
+	private getColumnLettersFromIndex(index: number): string {
+		// After the letter Z (index 25), the letter go back again from AA, AB, AC, ...
+		if (index >= 26) {
+			const firstLetterIndex = Math.floor(index / 25) - 1
+			return `${this.getColumnLettersFromIndex(firstLetterIndex)}${this.getColumnLettersFromIndex(
+				index % 26
+			)}`
+		}
+		return String.fromCharCode(index + 65)
+	}
+
+	private parseSheetValues(sheetValues: ISheetValue): ISheetsData {
+		const parsedValues: IParsedCells = flatten(
+			sheetValues.values.map((row, rowIndex) =>
+				row.map((cellValue, columnIndex) => ({
+					cell: `${this.getColumnLettersFromIndex(columnIndex)}${rowIndex + 1}`,
+					value: cellValue,
+				}))
+			)
+		)
+		return this.processSpreadsheet(parsedValues)
 	}
 
 	/**
-	 * Load spreadsheet data
+	 * Load spreadsheet cells values
 	 */
 	async loadSpreadsheetData(): Promise<void> {
 		try {
-			if (!this.spreadsheetsId) {
-				throw Error('Invalid spreadsheetsId')
-			}
+			const sheetPropertiesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}?key=${key}`
+			const sheetPropertiesRequest = new Request(sheetPropertiesUrl, {
+				method: 'GET',
+				contentType: 'application/json',
+			})
+			this.sheetsProperties = await this.httpClient.execute<ISheetsProperties>(
+				sheetPropertiesRequest
+			)
 
-			// We don't want to run all the requests everytime
-			if (!this.sheetsData.length) {
-				let shouldContinue = true
-				let pageNumber = 1
-				// We can't know the number of pages a sheet has
-				// so we must try to load each page until the request fails
-				while (shouldContinue) {
-					const url = `https://spreadsheets.google.com/feeds/cells/${this.spreadsheetsId}/${pageNumber}/public/full?alt=json`
-					const request = new Request(url, { method: 'GET', contentType: 'application/json' })
-					try {
-						const jsonData: ISheetsData = await this.httpClient.execute(request)
-						this.sheetsData = [...this.sheetsData, this.processSpreadsheet(jsonData)]
-						pageNumber++
-					} catch (e) {
-						shouldContinue = false
-					}
-				}
+			if (this.sheetsProperties) {
+				this.sheetsData = await Promise.all(
+					this.sheetsProperties.sheets.map(async ({ properties: { title } }) => {
+						const valuesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}/values/${title}?key=${key}`
+						const valuesRequest = new Request(valuesUrl, {
+							method: 'GET',
+							contentType: 'application/json',
+						})
+						const values = await this.httpClient.execute<ISheetValue>(valuesRequest)
+						return this.parseSheetValues(values)
+					})
+				)
 			}
 		} catch (error) {
 			const requestError: httpclient.Response<any> = error
@@ -175,10 +258,10 @@ export class SpreadsheetReader {
 	 */
 	getCellValue(cellId: string, page = 0): string | undefined {
 		this.currentPage = page
-		return search(
-			this.rawJson,
-			`feed.entry[*].{cell: title."$t", value: content."$t"}[?cell=='${cellId.toUpperCase()}'].value`
-		)[0]
+        const matchingCell = this.parsedCells.find(({ cell }) => cell === cellId)
+        if (matchingCell) {
+            return matchingCell.value
+        }
 	}
 
 	/**
