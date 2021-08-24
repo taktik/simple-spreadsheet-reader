@@ -76,12 +76,11 @@ interface ISheetsData {
 	maxColl?: string
 }
 
-const key = 'AIzaSyCrLUwWIUoJ3Ut46zgs6hyfytURyro9uuY'
-
 /**
  * A simple reader for a Google spreadsheet publish on web.
  */
 export class SpreadsheetReader {
+	private readonly apiKey: string
 	private sheetsProperties?: ISheetsProperties
 	private _currentPage = 0
 	private sheetsData: ISheetsData[] = []
@@ -167,7 +166,8 @@ export class SpreadsheetReader {
 		throw Error('No data, call loadSpreadsheetData first')
 	}
 
-	constructor(spreadsheetsUrlOrId: string) {
+	constructor(spreadsheetsUrlOrId: string, apiKey: string) {
+		this.apiKey = apiKey
 		this.httpClient = httpclient.newHttpClient()
 		try {
 			const url = new URL(spreadsheetsUrlOrId)
@@ -239,11 +239,13 @@ export class SpreadsheetReader {
 	 */
 	async loadSpreadsheetData(): Promise<void> {
 		try {
-			const sheetPropertiesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}?key=${key}`
+			const sheetPropertiesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}?key=${this.apiKey}`
 			const sheetPropertiesRequest = new Request(sheetPropertiesUrl, {
 				method: 'GET',
 				contentType: 'application/json',
 			})
+			// We are interested in the sheetsProperties.sheets to know the number of sheets and their names as it is
+			// necessary for the next request on /v4/spreadsheets/{sheetId}/values/{sheetName}
 			this.sheetsProperties = await this.httpClient.execute<ISheetsProperties>(
 				sheetPropertiesRequest
 			)
@@ -253,7 +255,7 @@ export class SpreadsheetReader {
 					this.sheetsProperties.sheets.map(async ({ properties: { title } }) => {
 						// The function parseSheetValues is made to parse the format majorDimension=ROWS, if that value changes, the function will break.
 						// https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
-						const valuesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}/values/${title}?majorDimension=ROWS&key=${key}`
+						const valuesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}/values/${title}?majorDimension=ROWS&key=${this.apiKey}`
 						const valuesRequest = new Request(valuesUrl, {
 							method: 'GET',
 							contentType: 'application/json',
