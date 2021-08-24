@@ -1,6 +1,5 @@
 import { httpclient } from 'typescript-http-client'
-import { search } from 'jmespath'
-import { groupBy, flatten } from 'lodash'
+import { flatten } from 'lodash'
 import Request = httpclient.Request
 
 interface IRGBColors {
@@ -68,7 +67,6 @@ export type SpredsheedCell = {
 	value: string
 	rows: string
 	coll: string
-	collNb: number
 }
 
 interface ISheetsData {
@@ -87,9 +85,9 @@ export class SpreadsheetReader {
 	private sheetsProperties?: ISheetsProperties
 	private _currentPage = 0
 	private sheetsData: ISheetsData[] = []
-	protected spreadsheetsId?: string
-	protected httpClient: httpclient.HttpClient
-	protected _xmlError?: string
+	private readonly spreadsheetsId?: string
+	private httpClient: httpclient.HttpClient
+	private _xmlError?: string
 
 	/**
 	 * gets the current page, indexed at 0
@@ -182,34 +180,53 @@ export class SpreadsheetReader {
 		}
 	}
 
-	protected processSpreadsheet(parsedCells: IParsedCells): ISheetsData {
+	private processSpreadsheet(parsedCells: IParsedCells): ISheetsData {
 		const cellsList = parsedCells.map((elem) => {
 			const parcedCell = /([A-Z]+)([0-9]+)/.exec(elem.cell)
 			if (parcedCell === null) throw Error('Error in spredsheet format')
 			const [cellId, coll, rows] = parcedCell
-			return Object.assign({ rows, coll, cellId, collNb: coll.charCodeAt(0) }, elem)
+			return { rows, coll, cellId, ...elem }
 		})
-		const maxRow = Number(search(cellsList, 'max_by([*], &rows).rows'))
-		const maxColl = String.fromCharCode(search(cellsList, 'max_by([*], &collNb).collNb'))
+		const maxRow = cellsList.reduce((highestRow, nextValue) => {
+			const currentRow = Number(nextValue.rows)
+			if (currentRow > highestRow) {
+				return currentRow
+			}
+			return highestRow
+		}, 0)
+		const maxColl = cellsList.reduce((highestColl, { coll }) => {
+			// parseInt(coll, 36) parses the letters as a number, which can then be compared to each other to define which is the "highest" column letter
+			if (parseInt(coll, 36) > parseInt(highestColl, 36)) {
+				return coll
+			}
+			return highestColl
+		}, 'A')
 		return { cellsList, parsedCells, maxRow, maxColl }
 	}
 
-	private getColumnLettersFromIndex(index: number): string {
-		// After the letter Z (index 25), the letter go back again from AA, AB, AC, ...
+	private static getColumnLettersFromIndex(index: number): string {
+		// After the letter Z (index >= 26), the letter go back again from AA, AB, AC, ...
 		if (index >= 26) {
-			const firstLetterIndex = Math.floor(index / 25) - 1
+			const firstLetterIndex = Math.floor(index / 26) - 1
+			const secondLetterIndex = index % 26
 			return `${this.getColumnLettersFromIndex(firstLetterIndex)}${this.getColumnLettersFromIndex(
-				index % 26
+				secondLetterIndex
 			)}`
 		}
 		return String.fromCharCode(index + 65)
 	}
 
+	/*
+	 * Function to parse the array we receive from google API into an array of objects containing the cell name alongside the cell value
+	 * [["cellValue1", "cellValue2"]] => [{cell: "A1", value: "cellValue1"}, {cell: "B2", value: "cellValue2"}]
+	 * This function is made to process results from a request using majorDimension=ROWS (default value for majorDimension on the get/value request)
+	 * If the request is made with another value for majorDimension, this function will break
+	 */
 	private parseSheetValues(sheetValues: ISheetValue): ISheetsData {
 		const parsedValues: IParsedCells = flatten(
 			sheetValues.values.map((row, rowIndex) =>
 				row.map((cellValue, columnIndex) => ({
-					cell: `${this.getColumnLettersFromIndex(columnIndex)}${rowIndex + 1}`,
+					cell: `${SpreadsheetReader.getColumnLettersFromIndex(columnIndex)}${rowIndex + 1}`,
 					value: cellValue,
 				}))
 			)
@@ -234,7 +251,9 @@ export class SpreadsheetReader {
 			if (this.sheetsProperties) {
 				this.sheetsData = await Promise.all(
 					this.sheetsProperties.sheets.map(async ({ properties: { title } }) => {
-						const valuesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}/values/${title}?key=${key}`
+						// The function parseSheetValues is made to parse the format majorDimension=ROWS, if that value changes, the function will break.
+						// https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
+						const valuesUrl = `https://sheets.googleapis.com/v4/spreadsheets/${this.spreadsheetsId}/values/${title}?majorDimension=ROWS&key=${key}`
 						const valuesRequest = new Request(valuesUrl, {
 							method: 'GET',
 							contentType: 'application/json',
@@ -258,22 +277,10 @@ export class SpreadsheetReader {
 	 */
 	getCellValue(cellId: string, page = 0): string | undefined {
 		this.currentPage = page
-        const matchingCell = this.parsedCells.find(({ cell }) => cell === cellId)
-        if (matchingCell) {
-            return matchingCell.value
-        }
-	}
-
-	/**
-	 * gel all lines of the spreadsheet in an array of array
-	 */
-	getAllLines(): Array<Array<string | undefined>> {
-		const cellsByRaws = groupBy(this.cellsList, (cell) => cell.rows)
-		const results: Array<Array<string | undefined>> = []
-		for (const i of SpreadsheetReader.numberGenerator(this.maxRow)) {
-			results.push(SpreadsheetReader.formatColl(cellsByRaws[i] || [], this.maxColl))
+		const matchingCell = this.parsedCells.find(({ cell }) => cell === cellId)
+		if (matchingCell) {
+			return matchingCell.value
 		}
-		return results
 	}
 
 	/**
@@ -354,39 +361,30 @@ export class SpreadsheetReader {
 		return table
 	}
 
-	protected static formatColl(
-		cells: Array<SpredsheedCell>,
-		maxColl: string
-	): Array<string | undefined> {
-		const cellsByColl = groupBy(cells, (cell) => cell.coll)
-		const results: Array<string> = []
-		for (const i of SpreadsheetReader.lettersGenerator(maxColl)) {
-			const cell: any = (cellsByColl[i] || [{ value: undefined }])[0]
-			results.push(cell.value)
-		}
-		return results
-	}
-
-	protected static *lettersGenerator(maxLetters: string): Generator<string> {
-		for (let i = 65; i <= maxLetters.charCodeAt(0); i++) {
-			yield String.fromCharCode(i)
+	private static *lettersGenerator(maxLetters: string): Generator<string> {
+		let currentLetters = 'A'
+		let index = 0
+		while (maxLetters !== currentLetters) {
+			currentLetters = SpreadsheetReader.getColumnLettersFromIndex(index)
+			yield currentLetters
+			index++
 		}
 	}
 
-	protected static *numberGenerator(maxLines = 100): Generator<number> {
+	private static *numberGenerator(maxLines = 100): Generator<number> {
 		for (let i = 1; i <= maxLines; i++) {
 			yield i
 		}
 	}
 
-	protected createHeadCell(cellContaint: string | undefined): HTMLTableDataCellElement {
+	private createHeadCell(cellContaint: string | undefined): HTMLTableDataCellElement {
 		const cell = document.createElement('td')
 		cell.classList.add('ssr-cell-head')
 		cell.appendChild(document.createTextNode(cellContaint || ''))
 		return cell
 	}
 
-	protected generateTable(maxRow: number, maxCell: string): HTMLTableElement {
+	private generateTable(maxRow: number, maxCell: string): HTMLTableElement {
 		const table = document.createElement('table')
 		table.classList.add('ssr-table')
 
