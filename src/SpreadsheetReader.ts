@@ -55,7 +55,7 @@ interface ISheetsProperties {
 interface ISheetValue {
 	majorDimension: string
 	range: string
-	values: Array<Array<string>>
+	values?: Array<Array<string>>
 }
 
 type ICell = { cell: string; value: string }
@@ -222,9 +222,9 @@ export class SpreadsheetReader {
 	 * This function is made to process results from a request using majorDimension=ROWS (default value for majorDimension on the get/value request)
 	 * If the request is made with another value for majorDimension, this function will break
 	 */
-	private parseSheetValues(sheetValues: ISheetValue): ISheetsData {
+	private parseSheetValues(sheetValues: Array<Array<string>>): ISheetsData {
 		const parsedValues: IParsedCells = flatten(
-			sheetValues.values.map((row, rowIndex) =>
+			sheetValues.map((row, rowIndex) =>
 				row.map((cellValue, columnIndex) => ({
 					cell: `${SpreadsheetReader.getColumnLettersFromIndex(columnIndex)}${rowIndex + 1}`,
 					value: cellValue,
@@ -251,7 +251,7 @@ export class SpreadsheetReader {
 			)
 
 			if (this.sheetsProperties) {
-				this.sheetsData = await Promise.all(
+				const sheets = await Promise.all(
 					this.sheetsProperties.sheets.map(async ({ properties: { title } }) => {
 						// The function parseSheetValues is made to parse the format majorDimension=ROWS, if that value changes, the function will break.
 						// https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/get
@@ -260,10 +260,18 @@ export class SpreadsheetReader {
 							method: 'GET',
 							contentType: 'application/json',
 						})
-						const values = await this.httpClient.execute<ISheetValue>(valuesRequest)
-						return this.parseSheetValues(values)
+
+						const sheet = await this.httpClient.execute<ISheetValue>(valuesRequest)
+						// If sheet.value doesnt exists it means the sheet is empty, we should not display it.
+						// We can't know before we fetch the sheets data, so the promise will resolve to undefined and we filter
+						// that out after.
+						if (!sheet.values) {
+							return undefined
+						}
+						return this.parseSheetValues(sheet.values)
 					})
 				)
+				this.sheetsData = sheets.filter((sheet): sheet is ISheetsData => sheet !== undefined)
 			}
 		} catch (error) {
 			const requestError: httpclient.Response<any> = error
@@ -364,7 +372,7 @@ export class SpreadsheetReader {
 	}
 
 	private static *lettersGenerator(maxLetters: string): Generator<string> {
-		let currentLetters = 'A'
+		let currentLetters = ''
 		let index = 0
 		while (maxLetters !== currentLetters) {
 			currentLetters = SpreadsheetReader.getColumnLettersFromIndex(index)

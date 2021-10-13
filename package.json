@@ -11,6 +11,7 @@
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
     "build": "tsc",
+  	"dev": "tsc --watch",
     "doc": "typedoc --plugin typedoc-plugin-markdown --out ./temp ./src",
     "release": "release-it"
   },
