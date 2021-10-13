@@ -1,7 +1,7 @@
 {
-  "name": "@taktik/simple-spreadsheet-reader",
+  "name": "taktik-simple-spreadsheet-reader",
   "version": "2.0.0",
-  "description": "simple reader for public google spredsheet",
+  "description": "Simple reader for public google spreadsheet",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/taktik/simple-spreadsheet-reader",
