@@ -13,7 +13,7 @@
 		"noImplicitThis": true,
 		"noImplicitAny": false,
 		"allowSyntheticDefaultImports": true,
-		"lib": ["es2017", "es6", "es5", "dom"],
+		"lib": ["es2019", "es2017", "es6", "es5", "dom"],
 		"declaration": true,
 		/* Generates corresponding '.d.ts' file. */
 		"outDir": "./dist",

@@ -11,7 +11,7 @@
     "test": "karma start --no-auto-watch --single-run",
     "test:watch": "karma start --browsers Chrome",
     "build": "tsc",
-  	"dev": "tsc --watch",
+    "dev": "tsc --watch",
     "doc": "typedoc --plugin typedoc-plugin-markdown --out ./temp ./src",
     "release": "release-it"
   },
@@ -24,8 +24,7 @@
   "author": "Taktik",
   "license": "ISC",
   "dependencies": {
-    "lodash": "^4.17.15",
-    "typescript-http-client": "^0.10.1"
+    "typescript-http-client": "0.10.4"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

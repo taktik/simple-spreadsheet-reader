@@ -1,6 +1,4 @@
-import { httpclient } from 'typescript-http-client'
-import { flatten } from 'lodash'
-import Request = httpclient.Request
+import { Request, HttpClient, newHttpClient, Response, } from 'typescript-http-client'
 
 interface IRGBColors {
 	red: number
@@ -85,7 +83,7 @@ export class SpreadsheetReader {
 	private _currentPage = 0
 	private sheetsData: ISheetsData[] = []
 	private readonly spreadsheetsId?: string
-	private httpClient: httpclient.HttpClient
+	private httpClient: HttpClient
 	private _xmlError?: string
 
 	/**
@@ -168,7 +166,7 @@ export class SpreadsheetReader {
 
 	constructor(spreadsheetsUrlOrId: string, apiKey: string) {
 		this.apiKey = apiKey
-		this.httpClient = httpclient.newHttpClient()
+		this.httpClient = newHttpClient()
 		try {
 			const url = new URL(spreadsheetsUrlOrId)
 			const parsed = /spreadsheets\/\w\/(.*)\//.exec(url.pathname)
@@ -223,13 +221,11 @@ export class SpreadsheetReader {
 	 * If the request is made with another value for majorDimension, this function will break
 	 */
 	private parseSheetValues(sheetValues: Array<Array<string>>): ISheetsData {
-		const parsedValues: IParsedCells = flatten(
-			sheetValues.map((row, rowIndex) =>
-				row.map((cellValue, columnIndex) => ({
-					cell: `${SpreadsheetReader.getColumnLettersFromIndex(columnIndex)}${rowIndex + 1}`,
-					value: cellValue,
-				}))
-			)
+		const parsedValues: IParsedCells = sheetValues.flatMap((row, rowIndex) =>
+			row.map((cellValue, columnIndex) => ({
+				cell: `${SpreadsheetReader.getColumnLettersFromIndex(columnIndex)}${rowIndex + 1}`,
+				value: cellValue,
+			}))
 		)
 		return this.processSpreadsheet(parsedValues)
 	}
@@ -274,8 +270,11 @@ export class SpreadsheetReader {
 				this.sheetsData = sheets.filter((sheet): sheet is ISheetsData => sheet !== undefined)
 			}
 		} catch (error) {
-			const requestError: httpclient.Response<any> = error
-			this._xmlError = requestError.body || error.message
+			this._xmlError = error instanceof Response
+				? error.body
+				: error instanceof Error
+					? error.message
+					: error
 			throw Error('Unable to load spreadsheets. For more info see xmlError attribute')
 		}
 	}
